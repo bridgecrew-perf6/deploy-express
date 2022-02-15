@@ -1,7 +1,7 @@
 const User = require("../models/userModel");
 
 
-exports.register = async (req, res)=> {
+exports.register = async (req, res) => {
     try {
 
         let user = new User({
@@ -41,53 +41,30 @@ exports.login = async (req, res) => {
                 type: "Not Found",
                 msg: "Wrong Login Details"
             })
-        }else{
-            
+        } else {
+
             let match = await user.compareUserPassword(login.password, user.password);
-        if (match) {
-            user.password="";
-            let token = await user.generateJwtToken({
-                user
-            }, "secret", {
-                expiresIn: 604800
-            })
+            if (match) {
+                user.password = "";
+                let token = await user.generateJwtToken({
+                    user
+                }, "secret", {
+                    expiresIn: 604800
+                })
 
-            if (token) {
-                res.status(200).json({
-                    success: true,
-                    token: token,
-                    userCredentials: user
+                if (token) {
+                    res.status(200).json({
+                        success: true,
+                        token: token,
+                        userCredentials: user
+                    })
+                }
+            } else {
+                res.status(400).json({
+                    type: "Not Found",
+                    msg: "Wrong Login Details"
                 })
             }
-        } else {
-            res.status(400).json({
-                type: "Not Found",
-                msg: "Wrong Login Details"
-            })
-        }
-        }
-
-        let match = await user.compareUserPassword(login.password, user.password);
-        if (match) {
-            user.password="";
-            let token = await user.generateJwtToken({
-                user
-            }, "secret", {
-                expiresIn: 604800
-            })
-
-            if (token) {
-                res.status(200).json({
-                    success: true,
-                    token: token,
-                    userCredentials: user
-                })
-            }
-        } else {
-            res.status(400).json({
-                type: "Not Found",
-                msg: "Wrong Login Details"
-            })
         }
     } catch (err) {
         console.log(err)
